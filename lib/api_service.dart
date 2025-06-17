@@ -3,6 +3,7 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:mini_rpg_flutter/character_page.dart';
+import 'package:mini_rpg_flutter/login_page.dart';
 
 final dio = Dio();
 final cookieJar = CookieJar();
@@ -48,12 +49,12 @@ Future<Response?> sendRequest(
     if (e.response != null) {
       showToast(
         context,
-        "${e.response?.statusCode} | ${e.response?.data.toString() ?? "No Response"}",
+        "${e.response?.realUri.path} ${e.response?.statusCode} | ${e.response?.data.toString() ?? "No Response"}",
       );
     } else {
       showToast(
         context,
-        "${e.response?.statusCode} | ${e.message ?? "Connect Error"}",
+        "${e.response?.realUri.path} ${e.response?.statusCode} | ${e.message ?? "Connect Error"}",
       );
     }
   } catch (e) {
@@ -100,6 +101,14 @@ Future<void> login(BuildContext context, String id, String pwd) async {
   }
 }
 
+Future<void> logout(BuildContext context) async {
+  final response = await sendRequest(context, () => dio.get('/logout'));
+
+  if (response != null && response.statusCode == 200) {
+    gotoPage(context, LoginPage(), 100);
+  }
+}
+
 Future<List<dynamic>> getCharacterList(BuildContext context) async {
   final response = await sendRequest(context, () => dio.get('/characters'));
   return response?.data["data"];
@@ -108,4 +117,32 @@ Future<List<dynamic>> getCharacterList(BuildContext context) async {
 Future<Map<String, dynamic>> getClassList(BuildContext context) async {
   final response = await sendRequest(context, () => dio.get('/class/all'));
   return response?.data;
+}
+
+Future<bool> createCharacter(
+  BuildContext context,
+  Map<String, dynamic> data,
+) async {
+  var response = await sendRequest(
+    context,
+    () => dio.post(
+      '/character/create',
+      data: data,
+      options: Options(contentType: Headers.jsonContentType),
+    ),
+  );
+  if (response == null) {
+    return false;
+  } else {
+    return response.statusCode.toString().startsWith("2");
+  }
+}
+
+Future<bool> deleteCharacter(BuildContext context, int id) async {
+  var response = await sendRequest(context, () => dio.delete('/character/$id'));
+  if (response == null) {
+    return false;
+  } else {
+    return response.statusCode.toString().startsWith("2");
+  }
 }

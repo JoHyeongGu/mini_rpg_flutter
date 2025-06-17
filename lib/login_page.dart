@@ -7,7 +7,7 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [Background(), LoginContents()]);
+    return Scaffold(body: Stack(children: [Background(), LoginContents()]));
   }
 }
 
