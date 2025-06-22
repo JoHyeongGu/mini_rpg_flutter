@@ -50,6 +50,7 @@ class _CharacterPageState extends State<CharacterPage> {
                 title: "Logout",
                 text: "Are you sure want to Logout?",
                 confirmText: "Logout",
+                icon: Icons.logout,
               );
             },
             icon: Icon(Icons.logout_sharp, color: Colors.white),
@@ -143,7 +144,12 @@ class _CharacterCardState extends State<CharacterCard> {
                 },
               );
             } else {
-              gotoPage(context, WorldPage(), 500);
+              selectCharacter(context, widget.data?["char_id"]);
+              gotoPage(
+                context,
+                WorldPage(charId: widget.data?["char_id"]),
+                500,
+              );
             }
             setState(() {
               state = "hover";
@@ -199,30 +205,33 @@ class _CharacterCardState extends State<CharacterCard> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.data!["nickname"],
-                style: _style.copyWith(fontSize: 45),
-              ),
-              Row(
-                spacing: 15,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(widget.data!["class_name"], style: _style),
-                  Icon(
-                    widget.data!["gender"] == "none"
-                        ? Icons.person
-                        : widget.data!["gender"] == "male"
-                        ? Icons.male
-                        : Icons.female,
-                    color: Colors.white,
-                  ),
-                ],
-              ),
-            ],
+          SingleChildScrollView(
+            physics: NeverScrollableScrollPhysics(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.data!["nickname"],
+                  style: _style.copyWith(fontSize: 45),
+                ),
+                Row(
+                  spacing: 15,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(widget.data!["class_name"], style: _style),
+                    Icon(
+                      widget.data!["gender"] == "none"
+                          ? Icons.person
+                          : widget.data!["gender"] == "male"
+                          ? Icons.male
+                          : Icons.female,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           Align(
             alignment: Alignment.topRight,
@@ -234,6 +243,7 @@ class _CharacterCardState extends State<CharacterCard> {
                   title: "Delete Character",
                   text: "Are you sure you want to delete this character?",
                   confirmText: "Delete",
+                  icon: Icons.delete,
                 );
               },
               icon: Icon(Icons.delete_outlined, color: Colors.white),

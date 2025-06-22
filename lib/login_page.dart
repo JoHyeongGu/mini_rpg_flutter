@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mini_rpg_flutter/api_service.dart';
 import 'package:mini_rpg_flutter/constant.dart';
 
+import 'character_page.dart';
+import 'world_page.dart';
+
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
@@ -93,7 +96,18 @@ class _LoginContentsState extends State<LoginContents> {
   }
 
   void _login(String input) async {
-    await login(context, idController.text, pwdController.text);
+    Map<String, dynamic>? result = await login(
+      context,
+      idController.text,
+      pwdController.text,
+    );
+    if (result != null) {
+      if (result["last_char"] == null) {
+        gotoPage(context, CharacterPage(), 100);
+      } else {
+        gotoPage(context, WorldPage(charId: result["last_char"]), 100);
+      }
+    }
   }
 
   Widget contents(String _section, Widget child, double height) {
